@@ -1,0 +1,22 @@
+# Paid plan required for durable disk storage. Review costs before applying.
+services:
+  - type: web
+    name: unboundwave
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/health
+    disk:
+      name: unboundwave-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /app/data
+      - key: SESSION_SECRET
+        generateValue: true
+# Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET privately in Render.
+# APP_ORIGIN defaults to RENDER_EXTERNAL_URL; override for a custom domain.
+# Replace the development session store before production Google account use.

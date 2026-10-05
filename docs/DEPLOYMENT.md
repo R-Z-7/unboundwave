@@ -17,3 +17,8 @@ The Vite frontend can be served as a static build, and Vercel supports Express a
 GitHub Pages alone is suitable for a static preview, not the full Google-authenticated backend. This repository does not currently contain Pages base-path/routing configuration.
 
 No hosting account, paid plan or live deployment has been created. This development release still has unfinished features listed in README.md.
+
+## Prepared Render Blueprint
+The repository includes `render.yaml`: a Docker web service, Starter plan, 1 GB persistent disk at `/app/data`, generated SESSION_SECRET, and `/api/health` health check. Applying it creates paid resources; review Render's current price estimate before confirming.
+
+Once the repository is pushed, in Render choose New → Blueprint, connect GitHub, and select `R-Z-7/unboundwave`. Review and apply the blueprint. APP_ORIGIN automatically uses Render's RENDER_EXTERNAL_URL; for a custom domain set APP_ORIGIN explicitly. Independent identity mode works without Google credentials. To enable Google accounts, privately set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET and register the assigned HTTPS domain followed by `/api/auth/callback` as the redirect URI. The development session store still needs replacement before production account use.

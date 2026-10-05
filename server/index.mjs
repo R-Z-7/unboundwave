@@ -7,7 +7,10 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 const app = express(),
   production = process.env.NODE_ENV === "production",
-  origin = process.env.APP_ORIGIN || "http://localhost:5173";
+  origin =
+    process.env.APP_ORIGIN ||
+    process.env.RENDER_EXTERNAL_URL ||
+    "http://localhost:5173";
 if (production && !process.env.SESSION_SECRET)
   throw Error("SESSION_SECRET required");
 app.set("trust proxy", 1);
@@ -51,6 +54,7 @@ async function google() {
     process.env.GOOGLE_CLIENT_SECRET,
   ));
 }
+app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 app.get("/api/session", (req, res) =>
   res.json({ user: req.session.user || null, googleConfigured: configured }),
 );
