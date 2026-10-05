@@ -196,7 +196,7 @@ const initial: Msg[] = [
   },
 ];
 function App() {
-  const [page, setPage] = useState("chats"),
+  const [page, setPage] = useState("landing"),
     [chats, setChats] = useState<Chat[]>(samples),
     [active, setActive] = useState("milo"),
     [messages, setMessages] = useState<Msg[]>(initial),
@@ -231,6 +231,8 @@ function App() {
     ),
     [mobile, setMobile] = useState(false),
     [discovered, setDiscovered] = useState<Chat[]>([]);
+  const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
+  const [googleConfigured, setGoogleConfigured] = useState(false);
   const [account, setAccount] = useState(false);
   const busy = useRef(false),
     end = useRef<HTMLDivElement>(null);
@@ -240,6 +242,7 @@ function App() {
     fetch("/api/session")
       .then((r) => r.json())
       .then(async (data) => {
+        setGoogleConfigured(!!data.googleConfigured);
         if (data.user) {
           setAccount(true);
           const p = await fetch("/api/profile").then((r) => r.json());
@@ -751,7 +754,9 @@ function App() {
     <Icon size={20} strokeWidth={1.7} />
   );
   return (
-    <div className={`app ${mobile ? "mobile-list" : ""}`}>
+    <div
+      className={`app ${page === "landing" && !secret ? "welcome" : ""} ${mobile ? "mobile-list" : ""}`}
+    >
       <aside className="rail">
         <a
           className="brand"
@@ -885,13 +890,15 @@ function App() {
             </select>
             <span className="breadcrumb">My space</span>
             <span className="slash">/</span>
-            {page === "rooms"
-              ? "Discover rooms"
-              : page === "settings"
-                ? "Settings & privacy"
-                : page === "requests"
-                  ? "Message requests"
-                  : "Chats"}
+            {page === "landing"
+              ? "Welcome to Unboundwave"
+              : page === "rooms"
+                ? "Discover rooms"
+                : page === "settings"
+                  ? "Settings & privacy"
+                  : page === "requests"
+                    ? "Message requests"
+                    : "Chats"}
           </div>
           <div className="top-actions">
             <span>
@@ -903,9 +910,32 @@ function App() {
             >
               {light ? <Moon size={18} /> : <Sun size={18} />}
             </button>
-            <button className="invite" onClick={() => void share()}>
-              <Plus size={15} /> Invite a friend
-            </button>
+            {!secret ? (
+              <>
+                <button
+                  className="auth-login"
+                  onClick={() => {
+                    setAuthMode("login");
+                    show("identity");
+                  }}
+                >
+                  Log in
+                </button>
+                <button
+                  className="primary auth-signup"
+                  onClick={() => {
+                    setAuthMode("signup");
+                    show("identity");
+                  }}
+                >
+                  Sign up
+                </button>
+              </>
+            ) : (
+              <button className="invite" onClick={() => void share()}>
+                <Plus size={15} /> Invite a friend
+              </button>
+            )}
           </div>
         </header>
         {page === "landing" ? (
@@ -927,11 +957,29 @@ function App() {
               Let’s make a little space for that again.
             </p>
             <div className="landing-buttons">
-              <button className="primary" onClick={() => show("identity")}>
-                Find your own corner <ArrowUpRight size={18} />
+              <button
+                className="primary"
+                onClick={() => {
+                  setAuthMode("signup");
+                  show("identity");
+                }}
+              >
+                Sign up <ArrowUpRight size={18} />
               </button>
-              <button className="secondary" onClick={() => setPage("chats")}>
-                Explore Unboundwave
+              <button
+                className="secondary"
+                onClick={() => {
+                  setAuthMode("login");
+                  show("identity");
+                }}
+              >
+                Log in
+              </button>
+              <button
+                className="landing-preview"
+                onClick={() => setPage("chats")}
+              >
+                Explore a preview <ArrowRight size={15} />
               </button>
             </div>
             <div className="landing-features">
@@ -1348,13 +1396,15 @@ function App() {
                 <h2>
                   <ShieldCheck /> Identity & recovery
                 </h2>
-                <label>
-                  Display name
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </label>
+                {authMode === "signup" && (
+                  <label>
+                    Display name
+                    <input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </label>
+                )}
                 <p>
                   Google restores account access. Your separate recovery secret
                   unlocks messaging keys.
@@ -1569,14 +1619,28 @@ function App() {
             {modal === "identity" ? (
               <>
                 <div className="eyebrow">YOUR VOICE. YOUR NETWORK.</div>
-                <h2>Make it your own.</h2>
+                <h2>
+                  {authMode === "login" ? "Welcome back." : "Make it your own."}
+                </h2>
                 <p>
                   One identity. An open network. Conversations that belong to
                   you.
                 </p>
-                <a className="google-button" href="/api/auth/google">
-                  <b>G</b> Continue with Google <ArrowRight size={17} />
-                </a>
+                {googleConfigured ? (
+                  <a className="google-button" href="/api/auth/google">
+                    <b>G</b> Continue with Google <ArrowRight size={17} />
+                  </a>
+                ) : (
+                  <>
+                    <button className="google-button" disabled>
+                      <b>G</b> Continue with Google
+                    </button>
+                    <small className="fine-print">
+                      Google sign-in is not configured yet. Use your independent
+                      identity below.
+                    </small>
+                  </>
+                )}
                 <div className="or">or use your independent identity</div>
                 <label>
                   Display name
@@ -1591,18 +1655,37 @@ function App() {
                     type="password"
                     value={recovery}
                     onChange={(e) => setRecovery(e.target.value)}
-                    placeholder="At least 16 characters for a new identity"
+                    placeholder={
+                      authMode === "signup"
+                        ? "At least 16 characters for a new identity"
+                        : "Your recovery secret or nsec key"
+                    }
                     autoComplete="off"
                   />
                 </label>
                 <button
                   className="primary"
-                  onClick={() => void createIdentity()}
+                  onClick={() =>
+                    authMode === "signup"
+                      ? void createIdentity()
+                      : void recover()
+                  }
                 >
-                  Create independent identity <ArrowUpRight size={17} />
+                  {authMode === "signup"
+                    ? "Create your identity"
+                    : "Log in and unlock identity"}
+                  <ArrowUpRight size={17} />
                 </button>
-                <button className="secondary" onClick={() => void recover()}>
-                  Unlock existing identity
+                <button
+                  className="secondary"
+                  onClick={() => {
+                    setAuthMode(authMode === "signup" ? "login" : "signup");
+                    setError("");
+                  }}
+                >
+                  {authMode === "signup"
+                    ? "Already have an identity? Log in"
+                    : "New here? Sign up"}
                 </button>
                 <small className="fine-print">
                   Store your recovery secret separately. Google sign-in alone
@@ -1836,8 +1919,8 @@ function App() {
                   Your network.
                 </h2>
                 <p>
-                  Unboundwave is an open-source space for human connection. Private
-                  messages use Nostr NIP-17 encryption. Public rooms are
+                  Unboundwave is an open-source space for human connection.
+                  Private messages use Nostr NIP-17 encryption. Public rooms are
                   relay-managed NIP-29 communities.
                 </p>
                 <p>

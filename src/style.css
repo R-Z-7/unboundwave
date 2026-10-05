@@ -1728,4 +1728,73 @@ main {
 }
 
 /* Longer Unboundwave wordmark fits the navigation rail. */
-.brand b { font-size: 22px; letter-spacing: -1.2px; }
+.brand b {
+  font-size: 22px;
+  letter-spacing: -1.2px;
+}
+.welcome .rail {
+  display: none;
+}
+.welcome .landing {
+  flex: 1;
+  padding: 70px max(30px, 10vw);
+}
+.welcome .landing-symbol {
+  right: 12vw;
+  font-size: 260px;
+}
+.welcome .landing-features {
+  max-width: 900px;
+}
+.welcome .topbar .breadcrumb,
+.welcome .topbar .slash,
+.welcome .mobile-page-select,
+.welcome .mobile-toggle {
+  display: none;
+}
+.auth-login {
+  font-size: 12px !important;
+  color: var(--text) !important;
+}
+.top-actions .auth-signup {
+  color: #211e16;
+  padding: 10px 16px;
+  font-size: 12px;
+  display: flex;
+}
+.landing-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.google-button:disabled {
+  width: 100%;
+  cursor: default;
+  opacity: 0.55;
+}
+@media (max-width: 600px) {
+  .welcome .landing {
+    padding: 50px 24px;
+  }
+  .welcome .landing-symbol {
+    font-size: 150px;
+    right: 30px;
+  }
+  .welcome .topbar > div:first-child {
+    font-size: 11px;
+  }
+  .welcome .topbar {
+    gap: 10px;
+  }
+  .welcome .top-actions > span {
+    display: none;
+  }
+  .welcome .top-actions {
+    gap: 8px;
+  }
+  .welcome .landing-buttons {
+    gap: 10px;
+  }
+}
