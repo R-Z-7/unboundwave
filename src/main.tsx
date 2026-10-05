@@ -1396,15 +1396,15 @@ function App() {
                 <h2>
                   <ShieldCheck /> Identity & recovery
                 </h2>
-                {authMode === "signup" && (
-                  <label>
-                    Display name
-                    <input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </label>
-                )}
+
+                <label>
+                  Display name
+                  <input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </label>
+
                 <p>
                   Google restores account access. Your separate recovery secret
                   unlocks messaging keys.
@@ -1642,13 +1642,15 @@ function App() {
                   </>
                 )}
                 <div className="or">or use your independent identity</div>
-                <label>
-                  Display name
-                  <input
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                  />
-                </label>
+                {authMode === "signup" && (
+                  <label>
+                    Display name
+                    <input
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                    />
+                  </label>
+                )}
                 <label>
                   Recovery secret or existing nsec key
                   <input
