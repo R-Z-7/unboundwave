@@ -1,0 +1,6 @@
+# Self hosting
+Run `npm ci && npm run build`, configure `.env`, then `node --env-file=.env server/index.mjs`. Serve the backend behind an HTTPS reverse proxy. Set APP_ORIGIN to the canonical origin, SESSION_SECRET to at least 32 random bytes, and Google redirect URI to APP_ORIGIN/api/auth/callback. Keep secrets out of version control and logs. `docker compose up --build` exposes port 3001 and persists encrypted backups under ./data. Keep the image non-public while unfinished production controls are completed.
+
+Before production, replace express-session MemoryStore with a durable supported session store, restrict trust proxy to your actual reverse proxy, run as a non-root user, restrict data directory permissions, use persistent storage, enable health monitoring without message logging, and security-review the client and backend. The current Docker setup is for development/self-hosted evaluation; it is not a hardened production deployment. Avoid logging OAuth callback query strings at the proxy. API Origin checks use APP_ORIGIN. No CORS is enabled. The app requests Google openid scope only.
+
+NIP-29 requires compatible relays, commonly with membership policy and NIP-42 requirements. Don't assume generic Nostr relays provide room governance or expiring invite enforcement. Relays have independent availability, retention, spam rules, and privacy policies.

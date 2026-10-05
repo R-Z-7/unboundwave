@@ -1,0 +1,2 @@
+# Code of conduct
+We welcome contributors of all backgrounds. Be respectful, assume good intent, provide constructive feedback, and respect people's boundaries and privacy. Harassment, discrimination, threats, doxxing, and unwanted sexual attention are unacceptable. Maintainers may remove contributions or restrict participation to protect the community. Report conduct concerns privately to repository maintainers through their published contact channels. A private reporting address must be configured before public community launch.
