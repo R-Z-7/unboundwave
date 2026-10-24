@@ -28,6 +28,9 @@ npm run preview
 ```
 The PWA service worker is enabled only in production/preview. Load conversations online, then test offline using a production build. History and outbox are encrypted before browser storage; the application shell is cached. The identity backup is also encrypted. Messaging private keys exist only in unlocked page memory; a reload locks the identity. Browser extensions/XSS/device compromise can expose an unlocked identity. Clearing local history does not delete relay or recipient copies.
 
+## Install on your devices
+The production app includes phone/tablet/desktop install guidance, mobile icons, and a complete offline app cache. Open **Install app** on the welcome page or in Settings. Host it at an HTTPS address for other devices. See [PWA installation and offline behavior](docs/PWA.md) for platform instructions, updates, and multi-device recovery.
+
 ## Architecture
 - Vite / React / TypeScript: responsive dark/light chat UI, room discovery, settings, profile links/QRs.
 - nostr-tools: on-device secp256k1 identity generation, NIP-44 encryption and NIP-59 wrappers for NIP-17 direct messages. Recipient inboxes come from newest kind-10050 announcements; missing inbox means failure. Separate sender/recipient wraps, signature verification, rumor/seal author checking, reply tags, event IDs for duplicate prevention, explicit statuses and retry.
@@ -45,7 +48,7 @@ NIP-29 is relay managed, not end-to-end encrypted. Discovery reads NIP-11 relay 
 - Production session store (current Express MemoryStore is development only), profile/avatar publishing, account settings sync status.
 - NIP-29 moderator roles/controls, enforceable expiring invitations. Profile invitations do not expire.
 - Public room messages need an offline outbox; currently private DMs queue offline. Draft text is not persisted until Send.
-- PWA mobile install compatibility and real multi-device/offline acceptance tests. Recovery rotates neither keys nor historical encryption; lost secret+key means loss of access.
+- Physical-device PWA installation and real multi-device acceptance tests. Recovery rotates neither keys nor historical encryption; lost secret+key means loss of access.
 
 Google sees sign-in activity; the app backend knows the Google subject and account settings. Relays see connection IPs, recipient routing, timing and public room content. Google Fonts loads remote font resources. The app is neither anonymous nor entirely serverless. NIP-17 does not provide automatic forward secrecy; key compromise may expose retained history.
 

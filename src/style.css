@@ -1798,3 +1798,53 @@ main {
     gap: 10px;
   }
 }
+
+/* Installed apps need room for notches, home indicators, and short viewports. */
+.app {
+  height: 100vh;
+  height: 100dvh;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+.chat-list, .rail {
+  overflow-y: auto;
+  min-height: 0;
+}
+.install-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  max-width: 900px;
+  margin-top: 32px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.install-card > svg { color: var(--orange); flex-shrink: 0; }
+.install-card b { font-size: 14px; font-weight: 550; }
+.install-card p { margin-top: 6px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+.install-card button { margin-left: auto; white-space: nowrap; }
+.install-steps { padding: 0; list-style: none; }
+.install-steps li { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.install-steps b { display: block; font-size: 13px; margin-bottom: 6px; }
+.install-steps span { font-size: 12px; line-height: 1.7; color: var(--muted); }
+.modal-backdrop { grid-template-columns: minmax(0, 1fr); }
+.modal { min-width: 0; overflow-wrap: anywhere; }
+.settings-grid > article { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .install-card { flex-wrap: wrap; gap: 12px; padding: 18px; }
+  .install-card > div { flex: 1; min-width: 170px; }
+  .install-card button { margin-left: 34px; }
+  .landing h1 { font-size: clamp(36px, 9vw, 55px); letter-spacing: -2px; }
+  .topbar { flex-wrap: wrap; height: auto; min-height: 58px; padding-top: 8px; padding-bottom: 8px; gap: 8px; }
+  .topbar .top-actions { margin-left: auto; }
+  .welcome .topbar > div:first-child { font-size: 11px; }
+  input, .search input, .composer input, .settings-grid input, .modal input,
+  .mobile-page-select { font-size: 16px; }
+  .mobile-toggle, .top-actions > button, .modal-close, .square,
+  .composer button { min-width: 44px; min-height: 44px; }
+  .modal-backdrop { padding: 12px; }
+  .modal { max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)); }
+  .offline-pill { top: auto; bottom: calc(12px + env(safe-area-inset-bottom)); width: max-content; max-width: 90vw; text-align: center; pointer-events: none; }
+}

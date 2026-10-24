@@ -50,6 +50,7 @@ import {
 } from "./network";
 import { finalizeEvent, verifyEvent, type Event } from "nostr-tools";
 import QRCode from "qrcode";
+import { usePwa } from "./pwa";
 import "./style.css";
 type Chat = {
   id: string;
@@ -196,6 +197,7 @@ const initial: Msg[] = [
   },
 ];
 function App() {
+  const pwa = usePwa();
   const [page, setPage] = useState("landing"),
     [chats, setChats] = useState<Chat[]>(samples),
     [active, setActive] = useState("milo"),
@@ -747,8 +749,6 @@ function App() {
       setNpub(contact);
       show("contact");
     }
-    if ("serviceWorker" in navigator && import.meta.env.PROD)
-      navigator.serviceWorker.register("/sw.js");
   }, []);
   const icon = (Icon: typeof MessageCircle) => (
     <Icon size={20} strokeWidth={1.7} />
@@ -998,6 +998,16 @@ function App() {
                 <b>Keep your independence.</b>
                 <p>Your identity. Multiple relays.</p>
               </div>
+            </div>
+            <div className="install-card">
+              <Download size={22} aria-hidden="true" />
+              <div>
+                <b>{pwa.installed ? "At home on your device." : "Your conversations. Wherever you are."}</b>
+                <p>Use Unboundwave on your phone, tablet, or computer.</p>
+              </div>
+              <button className="secondary" onClick={() => show("install")}>
+                {pwa.installed ? "App details" : "Install app"}
+              </button>
             </div>
           </section>
         ) : page === "chats" ? (
@@ -1393,6 +1403,14 @@ function App() {
             <p>Take control of your identity, privacy, and network.</p>
             <div className="settings-grid">
               <article>
+                <h2><Download /> App on this device</h2>
+                <p>{pwa.status}</p>
+                {pwa.updateReady && <p>A new version is ready. Finish your message, then close all Unboundwave windows and tabs and reopen the app to update.</p>}
+                <button className="secondary" onClick={() => show("install")}>
+                  {pwa.installed ? "App details" : "Install app"}
+                </button>
+              </article>
+              <article>
                 <h2>
                   <ShieldCheck /> Identity & recovery
                 </h2>
@@ -1596,7 +1614,7 @@ function App() {
       )}
       {!online && (
         <div className="offline-pill">
-          Offline · messages will queue on this device
+          Offline · private messages queue while unlocked
         </div>
       )}
       {modal && (
@@ -1616,7 +1634,29 @@ function App() {
               <X size={20} />
             </button>
             <span className="modal-mark">u↗</span>
-            {modal === "identity" ? (
+            {modal === "install" ? (
+              <>
+                <div className="eyebrow">AT HOME ON EVERY SCREEN</div>
+                <h2>{pwa.installed ? "You’re at home." : "Make room for your people."}</h2>
+                <p>{pwa.installed ? "Unboundwave is running as an app on this device." : "Keep Unboundwave a tap away, with its own app window and home screen icon."}</p>
+                {pwa.canInstall && !pwa.installed && (
+                  <button className="primary" onClick={() => void pwa.install()}>
+                    <Download size={18} /> Install Unboundwave
+                  </button>
+                )}
+                {!pwa.installed && (
+                  <ul className="install-steps">
+                    <li><b>iPhone & iPad</b><span>Open in Safari, tap Share, then Add to Home Screen. Enable Open as Web App if offered.</span></li>
+                    <li><b>Android</b><span>In Chrome, open the menu and choose Install app or Add to Home screen.</span></li>
+                    <li><b>Computer</b><span>Use the install icon in Chrome or Edge’s address bar, or File → Add to Dock in supported versions of Safari.</span></li>
+                  </ul>
+                )}
+                <p role="status">{pwa.status}</p>
+                {pwa.updateReady && <p>A new version is ready. Finish your message, close all Unboundwave windows and tabs, then reopen to update.</p>}
+                <p>After offline setup finishes, you can reopen the app without a connection. Unlock your identity to read saved private history or queue private messages. Sending needs a connection and the app open and unlocked.</p>
+                <small>On another device, import your encrypted identity backup and unlock it with your recovery secret. Installing does not transfer local history or drafts. If installation is unavailable, you can keep using the website.</small>
+              </>
+            ) : modal === "identity" ? (
               <>
                 <div className="eyebrow">YOUR VOICE. YOUR NETWORK.</div>
                 <h2>

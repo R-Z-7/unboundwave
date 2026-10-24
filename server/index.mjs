@@ -157,7 +157,13 @@ app.post("/api/logout", (req, res) => {
   if (req.get("origin") !== origin) return res.sendStatus(403);
   req.session.destroy(() => res.sendStatus(204));
 });
-app.use(express.static("dist"));
+app.use(express.static("dist", {
+  setHeaders(res, filePath) {
+    // Revalidate entry points so installs discover new releases promptly.
+    if (/\/(sw\.js|index\.html|manifest\.json)$/.test(filePath))
+      res.setHeader("Cache-Control", "no-cache");
+  },
+}));
 app.get("/{*path}", (req, res) => res.sendFile("index.html", { root: "dist" }));
 export { app };
 if (process.env.NODE_ENV !== "test")
